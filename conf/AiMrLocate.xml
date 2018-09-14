@@ -1,0 +1,58 @@
+<MRLocate>
+	<!-- 工参读取(1:本地;0:集群) -->
+    <local>1</local>
+    <!-- 工参文件目录 -->
+    <site>D:/files/aimr/site/site_new.txt</site>
+    <!-- mr 目录 -->
+    <mr.inputpath>D:/files/aimr/mr_test</mr.inputpath>
+    <!-- xdr 目录 -->
+    <xdr.inputpath>D:/files/aimr/xdr/stat_hour=2018072614</xdr.inputpath>
+    <!-- xdr 解析类 -->
+    <xdrclassname>com.bonc.AiMrLocate.job.mrutil.S1MMEXdr</xdrclassname>
+    <!-- mr 文件是否压缩（0：未压缩；1：snappy压缩格式） -->
+    <mrgzip>0</mrgzip>
+    <!-- xdr 文件是否压缩（0：未压缩；1：snappy压缩格式） -->
+    <xdrgzip>1</xdrgzip>
+    <!-- imsi 是否需要回填（0：不需要；1：需要） -->
+    <imsibackfill>1</imsibackfill>
+    <!-- 定位文件输出目录 -->
+    <resultpath>D:/files/aimr/locate</resultpath>
+    <!-- 1(输出mrPoint.toString) 0(输出需要的字段) -->
+    <resultType>0</resultType>
+    <!-- 队列名 -->
+    <queuename>bonc_songpeiqiang</queuename>
+    <!-- 分片大小（单位M） -->
+    <splitsize>200</splitsize>
+    
+    <!-- xdr时间偏移量（默认0） -->
+    <xdr2MrTimeOffset>0</xdr2MrTimeOffset>
+    <!-- xdr时间间隔（单位：秒） -->
+    <xdr2MrInterval>600</xdr2MrInterval>
+    <!-- mr时间间隔（单位：秒） -->
+    <mrInterval>30</mrInterval>
+    <!-- mr最大数量 -->
+    <mrMaxSize>150</mrMaxSize>
+    <!-- 自定义分组类（不填默认com.bonc.AiMrLocate.job.mrutil.S1apEnbidGroupingComparator） -->
+    <groupcomparer></groupcomparer>
+    <!-- 自定义排序类（不填默认com.bonc.AiMrLocate.job.mrutil.MrComparator） -->
+    <sortcomparer></sortcomparer>
+    <!--  -->
+    <multipoint>1</multipoint>
+    <!-- 是否删除错误mr（0：不删除；1：删除） -->
+    <deleteErrMR>0</deleteErrMR>
+    <!-- reduce个数 -->
+    <reducenum>10</reducenum>
+    <!-- 最小电平值 -->
+    <minRsrp>100</minRsrp>
+    <locate>
+    	<schema>PATHLOSS_TA_AOA</schema>
+    	<!-- v1定位策略： 单点定位（single） or 多点定位（multi） -->
+    	<type>multi</type>
+    </locate>
+    <redis>
+    	<!-- redis key前缀 -->
+    	<prefix>aimr:</prefix>
+    </redis>
+    
+    <isTest>false</isTest>
+</MRLocate>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<wordcount>
+    <words.inputpath>D:\\Workspaces\\eclipse_4.5_workspace\\scala.common\\data\\wordcount.txt</words.inputpath>
+    <resultpath>D:\\Workspaces\\eclipse_4.5_workspace\\scala.common\\data\\out</resultpath>
+</wordcount>
