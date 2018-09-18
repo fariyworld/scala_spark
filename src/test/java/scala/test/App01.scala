@@ -1,6 +1,7 @@
 package scala.test
 
 import org.junit.Test
+import scala.collection.JavaConversions._
 
 class App01 {
   
@@ -46,4 +47,50 @@ class App01 {
     var border = "+--" + "-" * content.length() + "--+\n"
     println(border + "|\b\b" + content + "\b\b|\n" + border)
   }
+  
+  
+  /**
+   * java hashmap 转 scala map
+   * 1. import scala.collection.JavaConversions._
+   * 2. .mapValues(_.toLong).toMap
+   * scala.collection.immutable.Map$Map3  不可变没有 += 操作符
+   */
+  @Test
+  def testMapConvert() {
+    
+    val javaScores = new java.util.HashMap[String, java.lang.Long]()
+    javaScores.put("scala", 90)
+    javaScores.put("python", 95)
+    javaScores.put("java", 99)
+    println(javaScores.getClass.getName)
+    javaScores.+= (("shell", 93))
+    val immutable_scalaScores = javaScores.mapValues(_.toLong).toMap
+    println(immutable_scalaScores.getClass.getName)
+  }
+  
+  
+  /**
+   * 
+   * 1. import scala.collection.JavaConversions._
+   * 2. val scalaMap = javaScores.mapResult(map =>{ })
+   * 
+   * scala.collection.mutable.Builder$$anon$1
+   * 添加元素	scalaMap.+= (("shell", 93))
+   */
+  @Test
+  def testMuMapConvert() {
+    
+    val javaScores = new java.util.HashMap[String, java.lang.Long]()
+    javaScores.put("scala", 90)
+    javaScores.put("python", 95)
+    javaScores.put("java", 99)
+    println(javaScores.size()) 
+    println(javaScores.getClass.getName)    
+    val scalaMap = javaScores.mapResult(map =>{ })
+    println(scalaMap.getClass.getName)
+    println(scalaMap)
+    scalaMap.+= (("shell", 93))
+    println(scalaMap)
+  }
+  
 }

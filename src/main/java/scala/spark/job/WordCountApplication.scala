@@ -32,10 +32,14 @@ object WordCountApplication {
     //TODO 读取配置
     val conf = new CustomHadoopConfiguration()
     ReadConfigFile.readXmlConfigFile2HadoopConfiguration(configFile, conf)
-
+    
     val sparkConf = new SparkConf()
                           .setAppName("wordcount")
                           /*.setMaster("local[1]")*/
+                          
+    val queuename = conf.get("queuename")
+    if(StringUtils.isNotBlank(queuename)) sparkConf.set("spark.yarn.queue", queuename)
+    
 
     val sc = new SparkContext(sparkConf)
 

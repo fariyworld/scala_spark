@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<broadcastapp>
+	<mr.inputPath>D:/Workspaces/eclipse_4.5_workspace/scala.common/data/mrdata</mr.inputPath>
+	<xdr.inputPath>D:/Workspaces/eclipse_4.5_workspace/scala.common/data/xdrdata</xdr.inputPath>
+	<site>D:/BONC/智能mr定位/test/aimr/site/site_new.txt</site>
+	<resultPath>D:/Workspaces/eclipse_4.5_workspace/scala.common/data/out</resultPath>
+
+</broadcastapp>

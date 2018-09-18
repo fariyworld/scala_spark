@@ -1,0 +1,14 @@
+1. spark-submit提交作业
+
+				运行模式            指定yarn队列                   app主类                                    jar包            args
+spark-submit --master yarn --queue bonc_songpeiqiang --class scala.spark.job.WordCountLocalApplication scala.common.jar WordCountAppConfig.xml
+
+
+
+
+2. 查看日志
+yarn logs -applicationId application_1534471928125_1081
+
+
+3.spark运行环境设置
+-Dspark.master=local[1]
