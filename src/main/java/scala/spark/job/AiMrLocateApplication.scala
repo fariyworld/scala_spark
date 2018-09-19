@@ -13,6 +13,7 @@ import org.apache.spark.sql.SparkSession
 
 import bsparam.Cell
 import bsparam.EarfcnPciUnitedKey
+import scala.collection.mutable.ListBuffer
 
 object AiMrLocateApplication {
   @transient lazy val LOGGER = Logger.getLogger(this.getClass)
@@ -47,18 +48,17 @@ object AiMrLocateApplication {
       .builder()
       .appName(this.getClass.getName)
       .getOrCreate();
-    
+
     val sc = sparkSession.sparkContext
     val sparkConf = sparkSession.conf
-    
+
     //TODO 设置spark运行时参数
-    sparkConf.set("spark.executor.memoryOverhead","2048")
+    sparkConf.set("spark.executor.memoryOverhead", "2048")
     val queuename = conf.get("queuename")
-    if(StringUtils.isNotBlank(queuename))  sparkConf.set("spark.yarn.queue", queuename)
-    
-    
-    LOGGER.warn("并发数： "+ sc.defaultParallelism)
-    LOGGER.warn("最小分区数： "+ sc.defaultMinPartitions)
+    if (StringUtils.isNotBlank(queuename)) sparkConf.set("spark.yarn.queue", queuename)
+
+    LOGGER.warn("并发数： " + sc.defaultParallelism)
+    LOGGER.warn("最小分区数： " + sc.defaultMinPartitions)
 
     //TODO 保证输出路径不存在
     val hdfs = FileSystem.get(sc.hadoopConfiguration)
@@ -70,7 +70,7 @@ object AiMrLocateApplication {
 
     try {
       //TODO 加载工参至广播变量
-      LOGGER.warn("*"*20 + "开始加载工参至广播变量"+ "*"*20)
+      LOGGER.warn("*" * 20 + "开始加载工参至广播变量" + "*" * 20)
       val cellMap = scala.collection.mutable.Map[Long, Cell]()
       val eciMaps = scala.collection.mutable.Map[Int, scala.collection.immutable.Map[EarfcnPciUnitedKey, Long]]()
       BsParamUtil.readBs2Cache(hdfs, new Path(site), cellMap, eciMaps)
@@ -78,18 +78,46 @@ object AiMrLocateApplication {
       val broadcastEciMaps = sc.broadcast(eciMaps)
       LOGGER.warn("cellMap size: " + broadcastCellMap.value.size)
       LOGGER.warn("eciMaps size: " + broadcastEciMaps.value.size)
-      LOGGER.warn("*"*20 + "加载工参至广播变量结束" + "*"*20)
+      LOGGER.warn("*" * 20 + "加载工参至广播变量结束" + "*" * 20)
 
       //TODO 读入XDR数据
-//      sc.textFile(xdrInputPath)
-//        .mapPartitions(iter => {
-//          val xdrStr = iter.next()
-//          
-//        })
-      
-      
+      val xdrRDD = sc.textFile(xdrInputPath)
+        .mapPartitions(iter => {
+          val resultList = new ListBuffer[Tuple2[String, String]]()
+          while (iter.hasNext) {
+            val xdrStr = iter.next()
+            //TODO 解析XDR
+
+            //TODO 生成LocatorCombinedKey
+
+            //TODO 放入ListBuffer
+          }
+          resultList.iterator
+        })
+
       //TODO 读入MR数据
-//      sc.textFile(mrInputPath)
+      val mrRDD = sc.textFile(mrInputPath)
+        .mapPartitions(iter => {
+          val resultList = new ListBuffer[Tuple2[String, String]]()
+          while (iter.hasNext) {
+            val xdrStr = iter.next()
+            //TODO 解析MR
+
+            //TODO 生成LocatorCombinedKey
+
+            //TODO 放入ListBuffer
+          }
+          resultList.iterator
+        })
+
+      //TODO 合并XDR和MR数据
+      val rdd = xdrRDD.union(mrRDD)
+
+      //TODO 分组
+
+      //TODO 排序
+
+      //TODO 定位
 
     } catch {
       // TODO handle error
@@ -100,7 +128,7 @@ object AiMrLocateApplication {
       // TODO stop spark
       sparkSession.stop()
       val END_TIME = System.currentTimeMillis()
-      LOGGER.warn(AssistUtil.getElapsedTime(END_TIME-START_TIME))
+      LOGGER.warn(AssistUtil.getElapsedTime(END_TIME - START_TIME))
     }
   }
 }

@@ -2,6 +2,12 @@ package scala.test
 
 import org.junit.Test
 import scala.collection.JavaConversions._
+import scala.collection.mutable.ListBuffer
+import scala.study.CustomKey
+import scala.study.Career.Career
+import scala.study.Career
+import scala.study.Employee
+import scala.io.Source
 
 class App01 {
   
@@ -78,7 +84,7 @@ class App01 {
    * 添加元素	scalaMap.+= (("shell", 93))
    */
   @Test
-  def testMuMapConvert() {
+  def testMuBuilderMapConvert() {
     
     val javaScores = new java.util.HashMap[String, java.lang.Long]()
     javaScores.put("scala", 90)
@@ -93,4 +99,86 @@ class App01 {
     println(scalaMap)
   }
   
+  
+  @Test
+  def testMap(){
+    
+    val details = scala.collection.mutable.Map[String, ListBuffer[String]]()
+    val listBuffer = details.get("bonc")
+    println(listBuffer)
+    println(listBuffer.isEmpty)
+  }
+  
+  @Test
+  def testHashCode(){
+    
+    val customKey1 = new CustomKey
+    customKey1.careerName_=(Career.HR)
+    
+    val customKey2 = new CustomKey
+    customKey2.careerName_=(Career.RD)
+    
+    println(customKey1.hashCode())
+    println(customKey2.hashCode())
+    
+  }
+  
+  @Test
+  def testEnum(){
+    val valueSet = Career.values
+    for(value <- valueSet){
+      println(value.id + "\t" + value.toString())
+    }
+  }
+  
+  
+  @Test
+  def testSortBy(){
+    val em3 = Employee.stringTo("james,0110275,CEO,1")
+    val em1 = Employee.stringTo("killy,0110099,CEO,2")
+		val em2 = Employee.stringTo("james,0110285,CEO,1")
+		
+		
+		val listBuffer = new ListBuffer[Employee]
+		listBuffer += em1
+		listBuffer += em2
+		listBuffer += em3
+		println(listBuffer)
+		println(listBuffer.sortBy(sortRule)(Ordering.Tuple2(Ordering.Long, Ordering.String.reverse)))
+  }
+  
+    
+  def sortRule(employee: Employee): (Long, String) = {
+    (employee.getTimeStamp, employee.getEmployeeID)
+  }
+
+  @Test
+  def testMapContains() {
+
+    val details = scala.collection.mutable.Map[String, ListBuffer[String]]()
+    val bufferedSource = Source.fromFile("D:/Workspaces/eclipse_4.5_workspace/scala.common/data/site")
+    for (lineTxt <- bufferedSource.getLines()) {
+      val lineArray = lineTxt.split("\\|", -1)
+      val persons = lineArray(1).split(",", -1)
+      val listBuffer = details.get(lineArray(0)).getOrElse(ListBuffer[String]())
+      for (person <- persons) {
+        listBuffer += person
+      }
+      details += (lineArray(0) -> listBuffer)
+    }
+    bufferedSource.close()
+    println(details)
+    val keySet = details.keySet
+    println(keySet)
+    var flag = true
+    for (key <- keySet if flag) {
+      println(key)
+      println(details.get(key).getClass)
+      println(details.get(key).get.getClass)
+      if (details.get(key).get.contains("mace")) {
+        flag = false
+        println(key + "|" + "aaaaa")
+      }
+    }
+  }
 }

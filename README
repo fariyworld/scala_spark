@@ -12,3 +12,15 @@ yarn logs -applicationId application_1534471928125_1081
 
 3.spark运行环境设置
 -Dspark.master=local[1]
+
+
+4. career -> timstamp -> employeeId
+
+(scala.study.CustomKey@2,CompactBuffer(james,0110285,CEO,1537254766011))
+(scala.study.CustomKey@0,CompactBuffer(mace,0110298,RD,1537254766000))
+(scala.study.CustomKey@0,CompactBuffer(amy,0110199,RD,15372547200001))
+(scala.study.CustomKey@1,CompactBuffer(fairy,0110299,HR,1537254765000))
+(scala.study.CustomKey@1,CompactBuffer(lorry,0110129,HR,15372547200101))
+(scala.study.CustomKey@3,CompactBuffer(tony,0110238,CTO,1537254764000))
+(scala.study.CustomKey@3,CompactBuffer(wede,0110299,CTO,15372547200001))
+(scala.study.CustomKey@2,CompactBuffer(killy,0110099,CEO,153725476100))
