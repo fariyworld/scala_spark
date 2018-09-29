@@ -55,12 +55,17 @@ object WordCountApplication {
         LOGGER.warn("输出路径存在, 已删除...")
       }
       
+      val longAccum = sc.longAccumulator("count")
+      val doubleAccum = sc.doubleAccumulator("ratio")
+      
       sc.textFile(wordsInputPath,1)
         .flatMap(lineTxt => StringUtils.splitByWholeSeparatorPreserveAllTokens(lineTxt, ","))
         .mapPartitions(iter =>{
           val resultList = new ListBuffer[Tuple2[String, Int]]()
           while (iter.hasNext) {
             //获取当前数据(一行)
+            longAccum.add(1L)
+            doubleAccum.add(1D)
             val lineTxt = iter.next()
             resultList += Tuple2(lineTxt, 1)
           }
@@ -69,6 +74,9 @@ object WordCountApplication {
         .reduceByKey(_+_, 1)
         .saveAsTextFile(resultPath)
 
+        LOGGER.warn("longAccum value == " + longAccum.value)
+        LOGGER.warn("doubleAccum value == " + doubleAccum.value)
+        
     } catch {
       // TODO handle error
       case ex: Exception => {

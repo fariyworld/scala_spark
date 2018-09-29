@@ -94,30 +94,29 @@ object AiMrLocateApplication {
           }
           resultList.iterator
         })
+        //TODO 合并XDR和MR数据
+        .union(
+          //TODO 读入MR数据
+          sc.textFile(mrInputPath)
+            .mapPartitions(iter => {
+              val resultList = new ListBuffer[Tuple2[String, String]]()
+              while (iter.hasNext) {
+                val mrStr = iter.next()
+                //TODO 解析MR
+                
+                //TODO 回填工参
 
-      //TODO 读入MR数据
-      val mrRDD = sc.textFile(mrInputPath)
-        .mapPartitions(iter => {
-          val resultList = new ListBuffer[Tuple2[String, String]]()
-          while (iter.hasNext) {
-            val xdrStr = iter.next()
-            //TODO 解析MR
+                //TODO 生成LocatorCombinedKey
 
-            //TODO 生成LocatorCombinedKey
-
-            //TODO 放入ListBuffer
-          }
-          resultList.iterator
-        })
-
-      //TODO 合并XDR和MR数据
-      val rdd = xdrRDD.union(mrRDD)
-
+                //TODO 放入ListBuffer
+              }
+              resultList.iterator
+            }))
       //TODO 分组
 
       //TODO 排序
 
-      //TODO 定位
+      //TODO 定位(回填IMSI)
 
     } catch {
       // TODO handle error
