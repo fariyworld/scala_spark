@@ -14,5 +14,6 @@ object LocateType extends Enumeration {
     log.info(LocateType.V1 == LocateType.withName("V1"));
     LocateType.values.foreach{value => print(value, value.id)}
     
+    LocateType.V1.equals(LocateType.V2)
   }
 }

@@ -58,13 +58,14 @@ object SampleApplication {
 
       //TODO job
       val mostWord = sc.textFile(inputPath, 1)
-        .sample(false, 0.3, System.currentTimeMillis())
+//        .sample(false, 0.9, System.currentTimeMillis())
         .flatMap(_.split(","))
         .map((_,1))
         .reduceByKey(_+_, 1)
-        .sortBy(_._2, false, 1)
-        .first()
-        .toString()
+        .sortBy(_._2, true, 1)
+        .take(10).toList.toString()
+//        .first()
+//        .toString()
         
      LOGGER.warn(mostWord)
 

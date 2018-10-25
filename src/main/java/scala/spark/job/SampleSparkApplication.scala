@@ -16,6 +16,8 @@ import org.apache.spark.SparkContext
 import scala.study.Employee
 import scala.study.CustomKey
 import org.apache.spark.HashPartitioner
+import scala.study.CustomKey
+import scala.study.CustomKey
 
 object SampleSparkApplication {
 
@@ -72,53 +74,44 @@ object SampleSparkApplication {
       LOGGER.warn("broadcast details size: " + broadcastDetails.value.size)
       LOGGER.warn("*" * 20 + "加载工参至广播变量结束" + "*" * 20)
       
-      val rdd = sc.textFile(mrInputPath).mapPartitions(iter => {
-        val resultList = new ListBuffer[Tuple2[String, Employee]]()
+      val rdd = sc.textFile(mrInputPath,1).mapPartitions(iter => {
+        val resultList = new ListBuffer[Tuple2[CustomKey, Employee]]()
         while (iter.hasNext) {
           val employee = Employee.stringTo(iter.next())
-          resultList +=  (Tuple2(employee.getCareer.toString(),employee))
+          resultList +=  (Tuple2(Employee.getCustomKey(employee), employee))
         }
         resultList.iterator
       })
-      .union(sc.textFile(xdrInputPath).mapPartitions(iter => {
-        val resultList = new ListBuffer[Tuple2[String, Employee]]()
+      .union(sc.textFile(xdrInputPath,1).mapPartitions(iter => {
+        val resultList = new ListBuffer[Tuple2[CustomKey, Employee]]()
         while (iter.hasNext) {
           val employee = Employee.stringTo(iter.next())
-          resultList +=  (Tuple2(employee.getCareer.toString(),employee))
+          resultList +=  (Tuple2(Employee.getCustomKey(employee), employee))
         }
         resultList.iterator
       }))
       .partitionBy(new HashPartitioner(reduceNum))
       .groupByKey(reduceNum)
+      /*.sortByKey(true, reduceNum)*///key extends Ordered[CustomKey] 重写 override def compare(other: CustomKey): Int
       .mapValues(iterable => {
         iterable.toList.sortBy(sortRule)
       })
-      .flatMap(groupSortValues => {
-        val values = groupSortValues._2
-        val resultList = new ListBuffer[String]
-        val detailsMap = broadcastDetails.value
-        val keySet = detailsMap.keySet
-        for(employee <- values){
-          val employeeName = employee.getName
-          var flag = true
-          var company: String = ""
-          for(key <- keySet if flag){
-            if(detailsMap.get(key).get.contains(employeeName)){
-              flag = false
-              company = key
-            }
-          }
-          resultList += company + "|" + employee.toString()
-        }
-        resultList.iterator
-      })
-      .saveAsTextFile(resultPath)
-      
-//      .flatMapValues(sortList =>{
+      .flatMap(kvs => {
+        println(kvs._1)
+        println(kvs._2.toString())
+        "ok"
+      }).count()
+//      .mapValues(iterable => {
+//        iterable.toList.sortBy(sortRule)
+//      })
+//      .flatMap(groupSortValues => {
+//        val values = groupSortValues._2
+//        LOGGER.warn(groupSortValues._1.toString())
+//        LOGGER.warn(values.size)
 //        val resultList = new ListBuffer[String]
 //        val detailsMap = broadcastDetails.value
 //        val keySet = detailsMap.keySet
-//        for(employee <- sortList){
+//        for(employee <- values){
 //          val employeeName = employee.getName
 //          var flag = true
 //          var company: String = ""
@@ -133,66 +126,7 @@ object SampleSparkApplication {
 //        resultList.iterator
 //      })
 //      .saveAsTextFile(resultPath)
-//      .foreachPartition(partition => {
-//        while(partition.hasNext){
-//          val group = partition.next()
-//          val key = group._1
-//          val values = group._2
-//          LOGGER.warn(key)
-//          for(value <- values){
-//            LOGGER.warn(value)
-//          }
-//        }
-//      })
       
-//      sc.textFile(mrInputPath).mapPartitions(iter => {
-//        val resultList = new ListBuffer[Employee]()
-//        while (iter.hasNext) {
-//          val employee = Employee.stringTo(iter.next())
-//          resultList +=  (employee)
-//        }
-//        resultList.iterator
-//      })
-//      .union(sc.textFile(xdrInputPath).mapPartitions(iter => {
-//        val resultList = new ListBuffer[Employee]()
-//        while (iter.hasNext) {
-//          val employee = Employee.stringTo(iter.next())
-//          resultList += (employee)
-//        }
-//        resultList.iterator
-//      }))
-//      .keyBy(employee => employee.toString().split(",", -1)(2))
-//      .partitionBy(new HashPartitioner(reduceNum))
-//      .groupByKey(reduceNum)
-//      .sortBy(_._1, true, reduceNum)//升序
-//      .foreachPartition(partition => {
-//        while(partition.hasNext){
-//          val group = partition.next()
-//          val key = group._1
-//          val values = group._2
-//          LOGGER.warn(key)
-//          for(value <- values){
-//            LOGGER.warn(value)
-//          }
-//        }
-//      })
-      
-//      .saveAsTextFile(resultPath)
-//      .mapPartitions(iter => {
-//        val resultList = new ListBuffer[String]()
-//        while(iter.hasNext){
-//          val sameCareer = iter.next()
-//          LOGGER.warn(sameCareer._1)
-//          val employeeIterable = sameCareer._2
-//          LOGGER.warn(employeeIterable.size)
-//          for(employee <- employeeIterable){
-//            resultList + employee.toString()
-//          }
-//        }
-//        resultList.iterator
-//      })
-//      .saveAsTextFile(resultPath)
-
     } catch {
       // TODO handle error
       case ex: Exception => {
